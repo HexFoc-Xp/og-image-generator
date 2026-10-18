@@ -33,6 +33,11 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+# ── package metadata ──────────────────────────────────────────────────────
+__version__ = "0.1.0"
+__author__ = "HexFoc-Xp"
+__license__ = "MIT"
+
 # ── palette (shared with HexFoc-Xp profile README) ─────────────────────────
 BG, BG2, LINE = "#0b0d10", "#11151b", "#1d232c"
 TXT, DIM, MUTE = "#d7dde5", "#7b8594", "#4a5361"
@@ -46,6 +51,7 @@ SANS = "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
 # OG image standard dimensions (recommended by Twitter/Facebook)
 OG_W, OG_H = 1200, 630
 
+# Templates ship inside the package (src/og_image_hexfoc/templates/)
 TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
 
 AVAILABLE_TEMPLATES = ["terminal", "minimal", "gradient"]
@@ -55,8 +61,12 @@ def _load_template_module(name: str):
     """Dynamically load a template module from templates/<name>.py."""
     path = TEMPLATE_DIR / f"{name}.py"
     if not path.exists():
-        raise FileNotFoundError(f"Template '{name}' not found at {path}")
-    spec = importlib.util.spec_from_file_location(f"og_template_{name}", path)
+        raise FileNotFoundError(
+            f"Template '{name}' not found. Available: {AVAILABLE_TEMPLATES}"
+        )
+    spec = importlib.util.spec_from_file_location(
+        f"og_image_hexfoc.templates.{name}", path
+    )
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)

@@ -8,14 +8,18 @@ Outputs:
     examples/terminal-blog.png
     examples/minimal-tutorial.png
     examples/gradient-launch.png
+
+This script is shipped in the source distribution. After cloning the repo,
+you can run it to regenerate the example images.
 """
 import sys
 from pathlib import Path
 
+# Allow running from a checkout without installing the package
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from og_image import generate
+from og_image_hexfoc import generate
 
 # Example 1: Terminal template — for technical blog post
 generate(

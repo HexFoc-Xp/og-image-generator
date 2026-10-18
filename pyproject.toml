@@ -1,0 +1,95 @@
+[build-system]
+requires = ["hatchling>=1.18.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "og-image-hexfoc"
+version = "0.1.0"
+description = "Generate beautiful Open Graph (OG) images for your blog posts, tutorials, and announcements. 3 templates: terminal, minimal, gradient."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = { paths = ["LICENSE"] }
+authors = [
+    { name = "HexFoc-Xp", email = "hexfoc-xp@users.noreply.github.com" },
+]
+keywords = [
+    "og-image",
+    "open-graph",
+    "social-image",
+    "share-image",
+    "twitter-card",
+    "svg",
+    "playwright",
+    "blog",
+    "preview-image",
+    "thumbnail",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+dependencies = [
+    "playwright>=1.40.0",
+]
+
+[project.optional-dependencies]
+# Alternative renderer (lower quality, but no Chromium download needed)
+cairosvg = ["cairosvg>=2.7.0"]
+# Development dependencies
+dev = [
+    "build>=1.0.0",
+    "twine>=4.0.0",
+    "pytest>=7.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/HexFoc-Xp/og-image-generator"
+Documentation = "https://github.com/HexFoc-Xp/og-image-generator#readme"
+Repository = "https://github.com/HexFoc-Xp/og-image-generator"
+Issues = "https://github.com/HexFoc-Xp/og-image-generator/issues"
+Changelog = "https://github.com/HexFoc-Xp/og-image-generator/releases"
+"Buy me a coffee" = "https://saweria.co/HexFocXp"
+
+# CLI entry point: after `pip install og-image-hexfoc`,
+# the user can run `og-image --title "..." --output out.png`
+[project.scripts]
+og-image = "og_image_hexfoc:main"
+
+[tool.hatch.build]
+include = [
+    "src/og_image_hexfoc/**/*.py",
+    "src/og_image_hexfoc/templates/*.py",
+    "LICENSE",
+    "README.md",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/og_image_hexfoc"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src",
+    "scripts",
+    "examples",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    ".gitignore",
+]

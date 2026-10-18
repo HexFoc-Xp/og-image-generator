@@ -12,6 +12,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"/></a>
   <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python 3.9+"/>
   <img src="https://img.shields.io/badge/templates-3-green.svg" alt="3 templates"/>
+  <a href="https://pypi.org/project/og-image-hexfoc/"><img src="https://img.shields.io/badge/PyPI-og--image--hexfoc-blue.svg" alt="PyPI package"/></a>
 </p>
 
 ---
@@ -23,6 +24,7 @@
 - 🎯 **CLI + Python library** — use as a command-line tool or import as a module
 - 🚀 **SVG-first rendering** — crisp output at any resolution via Playwright + Chromium
 - 🔧 **Customizable** — override accent color, change author, swap templates
+- 📦 **PyPI package** — `pip install og-image-hexfoc` and you're ready
 - 🇮🇩 **Made in Indonesia** — by [HexFoc-Xp](https://github.com/HexFoc-Xp)
 
 ---
@@ -60,19 +62,28 @@ Best for: product launches, announcements, portfolio highlights.
 
 ## 🚀 Quick Start
 
-### Install
+### Install (recommended)
+
+```bash
+pip install og-image-hexfoc
+playwright install chromium   # one-time setup, downloads Chromium (~150 MB)
+```
+
+That's it. Now `og-image` is available as a CLI command and `og_image_hexfoc` is importable as a Python library.
+
+### Install from source (for development)
 
 ```bash
 git clone https://github.com/HexFoc-Xp/og-image-generator.git
 cd og-image-generator
-pip install -r requirements.txt
-playwright install chromium   # one-time setup
+pip install -e ".[dev]"
+playwright install chromium
 ```
 
 ### CLI Usage
 
 ```bash
-python og_image.py \
+og-image \
     --title    "Booting Linux on Android without root" \
     --subtitle "A deep dive into User-Mode Linux on aarch64" \
     --author   "HexFoc-Xp" \
@@ -90,7 +101,7 @@ wrote out.png (160 KB)
 ### Library Usage
 
 ```python
-from og_image import generate
+from og_image_hexfoc import generate
 
 generate(
     title="My awesome blog post",
@@ -273,6 +284,79 @@ Contributions welcome! Especially:
 - 🐛 Bug fixes
 
 Open an issue first to discuss what you'd like to add.
+
+---
+
+## 📦 Publishing a new release (maintainer only)
+
+This section is for repo maintainers (HexFoc-Xp) releasing new versions to PyPI.
+
+### Prerequisites
+
+1. **PyPI account** — register at https://pypi.org/account/register/
+2. **API token** — https://pypi.org/manage/account/token/ (scope: "Entire account")
+   - Save the token (`pypi-xxxxxxxxxxxxxxxxxxxx`) somewhere safe
+3. **2FA enabled** (recommended) — https://pypi.org/manage/account/
+
+### Steps to release a new version
+
+```bash
+# 1. Update version in pyproject.toml AND src/og_image_hexfoc/__init__.py
+#    (they must match)
+#    e.g. version = "0.2.0"
+
+# 2. Clean previous builds
+rm -rf dist/ build/ src/*.egg-info
+
+# 3. Build sdist + wheel
+python -m build
+
+# 4. Verify the archives
+twine check dist/*
+
+# 5. Test upload to TestPyPI (optional but recommended)
+#    Register at https://test.pypi.org/ if you haven't
+twine upload --repository testpypi dist/*
+
+# 6. Install from TestPyPI to verify
+pip install -i https://test.pypi.org/simple/ og-image-hexfoc
+
+# 7. Upload to real PyPI
+twine upload dist/*
+
+# 8. Tag the release on GitHub
+git tag -a v0.2.0 -m "Release 0.2.0"
+git push origin v0.2.0
+
+# 9. Create a GitHub Release (Web UI or `gh release create`)
+#    Attach the sdist + wheel from dist/ as release artifacts
+```
+
+### First-time setup: configure credentials
+
+Create `~/.pypirc`:
+
+```ini
+[distutils]
+index-servers =
+    pypi
+    testpypi
+
+[pypi]
+username = __token__
+password = pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   # your real PyPI token
+
+[testpypi]
+username = __token__
+password = pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   # your TestPyPI token
+```
+
+Set file permissions: `chmod 600 ~/.pypirc`
+
+### Automated releases via GitHub Actions (optional)
+
+You can automate the release process by adding a workflow that
+triggers on git tags. See `.github/workflows/release.yml` (to be added).
 
 ---
 
