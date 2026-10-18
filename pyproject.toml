@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "og-image-hexfoc"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate beautiful Open Graph (OG) images for your blog posts, tutorials, and announcements. 3 templates: terminal, minimal, gradient."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -20,10 +20,13 @@ keywords = [
     "share-image",
     "twitter-card",
     "svg",
+    "cairosvg",
     "playwright",
     "blog",
     "preview-image",
     "thumbnail",
+    "termux",
+    "android",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -32,6 +35,7 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Operating System :: Android",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -46,12 +50,15 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "playwright>=1.40.0",
+    # cairosvg is the default renderer — works on ALL platforms
+    # (including Termux/Android where Playwright is not available)
+    "cairosvg>=2.7.0",
 ]
 
 [project.optional-dependencies]
-# Alternative renderer (lower quality, but no Chromium download needed)
-cairosvg = ["cairosvg>=2.7.0"]
+# Optional high-quality renderer via Playwright + Chromium.
+# Not available on Android/Termux — there, cairosvg is used instead.
+playwright = ["playwright>=1.40.0"]
 # Development dependencies
 dev = [
     "build>=1.0.0",

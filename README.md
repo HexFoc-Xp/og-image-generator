@@ -62,14 +62,44 @@ Best for: product launches, announcements, portfolio highlights.
 
 ## 🚀 Quick Start
 
-### Install (recommended)
+### Install (recommended — desktop)
 
 ```bash
 pip install og-image-hexfoc
-playwright install chromium   # one-time setup, downloads Chromium (~150 MB)
 ```
 
 That's it. Now `og-image` is available as a CLI command and `og_image_hexfoc` is importable as a Python library.
+
+The default renderer is **cairosvg** (pure Python, no Chromium download needed, works on every platform). If you want higher quality rendering with per-glyph font fallback, install the optional `playwright` extra:
+
+```bash
+pip install og-image-hexfoc[playwright]
+playwright install chromium   # one-time, downloads Chromium (~150 MB)
+```
+
+### 📱 Install on Termux (Android)
+
+The package is fully compatible with Termux! Playwright is **not available on Android**, but cairosvg works perfectly.
+
+```bash
+# In Termux, first install system dependencies for cairosvg:
+pkg update
+pkg install python libcairo cairo-png libjpeg-turbo libpng
+
+# Then install the package:
+pip install og-image-hexfoc
+
+# Verify it works:
+og-image --title "Hello from Termux!" --template terminal --output test.png
+ls -la test.png
+```
+
+If you hit any `libcairo` issues during `pip install cairosvg`, run:
+```bash
+pkg install libxml2 libxslt
+pip install --upgrade pip
+pip install og-image-hexfoc
+```
 
 ### Install from source (for development)
 
@@ -77,7 +107,6 @@ That's it. Now `og-image` is available as a CLI command and `og_image_hexfoc` is
 git clone https://github.com/HexFoc-Xp/og-image-generator.git
 cd og-image-generator
 pip install -e ".[dev]"
-playwright install chromium
 ```
 
 ### CLI Usage

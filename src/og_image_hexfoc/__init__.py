@@ -34,7 +34,7 @@ from pathlib import Path
 from typing import Optional
 
 # ── package metadata ──────────────────────────────────────────────────────
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = "HexFoc-Xp"
 __license__ = "MIT"
 
@@ -74,14 +74,39 @@ def _load_template_module(name: str):
 
 
 def render_svg(svg: str, output: Path, width: int = OG_W, height: int = OG_H) -> None:
-    """Render an SVG string to a PNG file using headless Chromium.
+    """Render an SVG string to a PNG file.
 
-    Falls back to cairosvg if Playwright is unavailable.
+    Renderer priority:
+      1. cairosvg (default — works on ALL platforms including Termux/Android)
+      2. playwright + chromium (optional high-quality fallback, desktop only)
+
+    Set env var OG_IMAGE_RENDERER=playwright to force the playwright path,
+    or OG_IMAGE_RENDERER=cairosvg to force cairosvg.
     """
+    import os
     output.parent.mkdir(parents=True, exist_ok=True)
     output = output.resolve()
 
-    # Try Playwright first (best rendering quality)
+    forced = os.environ.get("OG_IMAGE_RENDERER", "").lower().strip()
+
+    # Default path: cairosvg (always available, works everywhere)
+    if forced != "playwright":
+        try:
+            import cairosvg
+            cairosvg.svg2png(bytestring=svg.encode("utf-8"),
+                             write_to=str(output),
+                             output_width=width * 2,
+                             output_height=height * 2)
+            return
+        except ImportError:
+            if forced == "cairosvg":
+                raise RuntimeError(
+                    "OG_IMAGE_RENDERER=cairosvg was set, but cairosvg is not "
+                    "installed. Run: pip install cairosvg"
+                )
+            # else: fall through to playwright
+
+    # Optional high-quality path: playwright + chromium (desktop only)
     try:
         from playwright.sync_api import sync_playwright
         svg_path = output.with_suffix(".svg")
@@ -109,21 +134,11 @@ def render_svg(svg: str, output: Path, width: int = OG_W, height: int = OG_H) ->
     except ImportError:
         pass
 
-    # Fallback: cairosvg (lower quality, no font fallback per-glyph)
-    try:
-        import cairosvg
-        cairosvg.svg2png(bytestring=svg.encode("utf-8"),
-                         write_to=str(output),
-                         output_width=width * 2,
-                         output_height=height * 2)
-        return
-    except ImportError:
-        pass
-
     raise RuntimeError(
-        "Neither playwright nor cairosvg is installed. Install one of:\n"
-        "  pip install playwright && playwright install chromium\n"
-        "  pip install cairosvg"
+        "No renderer available. Install one of:\n"
+        "  pip install cairosvg               (default, works everywhere)\n"
+        "  pip install og-image-hexfoc[playwright] && playwright install chromium\n"
+        "    (higher quality, desktop only — does not work on Termux/Android)"
     )
 
 
